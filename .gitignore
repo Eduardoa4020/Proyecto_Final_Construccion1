@@ -6,8 +6,11 @@ env/
 .idea
 .env
 .ent
+.ent/
+
 # Otros comunes que podrías querer ignorar:
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+db.sqlite3
