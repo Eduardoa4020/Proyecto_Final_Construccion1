@@ -53,4 +53,3 @@
   ```html
   <link rel="icon" type="image/x-icon" href="{% static 'Authentication/favicon.ico' %}">
   ```
-
