@@ -1,14 +1,9 @@
 {% extends "components/base.html" %}
 {% load static %}
+
+{% block title %}Iniciar sesión - MonitorAula{% endblock %}
 {% block content %}
-<head>
-  <link rel="stylesheet" href="{% static 'Authentication/css/login.css' %}" />
-  <title>Iniciar sesión - MonitorAula</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-
-
+<link rel="stylesheet" href="{% static 'Authentication/css/login.css' %}" />
 <main class="login-body bg-gray-100 flex justify-center items-center h-screen">
   <div class="login-container bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
     <div class="text-center mb-6">

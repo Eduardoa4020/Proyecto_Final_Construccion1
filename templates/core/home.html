@@ -2,29 +2,20 @@
 {% load static %}
 
 {% block content %}
-<div class="full-banner"></div>
+<head>
+    <meta charset="UTF-8">
+    <title>MonitorAula - Inicio</title>
+    <link rel="stylesheet" href="{% static 'Authentication/css/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<section class="welcome-text">
+    <section class="welcome-text">
     <h2>Bienvenido a MonitorAula</h2>
     <p>
         Este sistema usa inteligencia artificial y visión por cámara para analizar la atención de los estudiantes en tiempo real.<br>
         Detecta signos de somnolencia y distracción, ayudando a mejorar el aprendizaje y el ambiente en el aula.<br><br>
         <strong>MonitorAula</strong> es tu aliado para potenciar la concentración y el rendimiento académico.
     </p>
-    <a href="#about" class="btn btn-primary">Más información</a>
+   
 </section>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-    .full-banner {
-        background: url('{% static "core/img/banner.jpg" %}') center/cover no-repeat;
-        height: 300px;
-    }
-    .welcome-text {
-        max-width: 600px;
-        margin: 40px auto;
-        text-align: center;
-    }
-</style>
-{% endblock %}
