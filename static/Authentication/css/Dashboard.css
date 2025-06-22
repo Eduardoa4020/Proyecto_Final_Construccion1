@@ -16,17 +16,17 @@
  }
 
  .attention-high {
-     background-color: #0a5c32;
+     background-color: #ffffff;
      border-left: 4px solid #10b981;
  }
 
  .attention-medium {
-     background-color: #fef3c7;
+     background-color: #ffffff;
      border-left: 4px solid #f59e0b;
  }
 
  .attention-low {
-     background-color: #fee2e2;
+     background-color: #ffffff;
      border-left: 4px solid #4472ef;
  }
 
