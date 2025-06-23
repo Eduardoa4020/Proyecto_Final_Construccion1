@@ -1,4 +1,4 @@
-  let stream = null;
+let stream = null;
   let intervaloEnvio = null;
   let timerInterval = null;
   let elapsedTime = 0;
@@ -137,43 +137,26 @@
   }
   
   function actualizarGraficas(data) {
-    // Actualizar las barras y porcentajes
-    document.getElementById('barra-atentos').style.width = data.atentos + '%';
-    document.getElementById('barra-distraidos').style.width = data.distraidos + '%';
-    document.getElementById('barra-somnolientos').style.width = data.somnolientos + '%';
+    // Asegura que los valores sean números válidos
+    const atentos = isFinite(Number(data.atentos)) ? Number(data.atentos) : 0;
+    const distraidos = isFinite(Number(data.distraidos)) ? Number(data.distraidos) : 0;
+    const somnolientos = isFinite(Number(data.somnolientos)) ? Number(data.somnolientos) : 0;
 
-    document.getElementById('porcentaje-atentos').innerText = data.atentos + '%';
-    document.getElementById('porcentaje-distraidos').innerText = data.distraidos + '%';
-    document.getElementById('porcentaje-somnolientos').innerText = data.somnolientos + '%';
+    document.getElementById('barra-atentos').style.width = atentos + '%';
+    document.getElementById('barra-distraidos').style.width = distraidos + '%';
+    document.getElementById('barra-somnolientos').style.width = somnolientos + '%';
+
+    document.getElementById('porcentaje-atentos').innerText = atentos + '%';
+    document.getElementById('porcentaje-distraidos').innerText = distraidos + '%';
+    document.getElementById('porcentaje-somnolientos').innerText = somnolientos + '%';
 
     // Lógica de mostrar/ocultar alerta
     const alerta = document.getElementById('attention-alert');
-    const porcentajeDistraidos = parseFloat(data.distraidos);
-
-    if (!isNaN(porcentajeDistraidos) && porcentajeDistraidos >= 50) {
+    if (distraidos >= 50) {
         alerta.classList.remove('hidden');
         alerta.style.display = 'flex';
     } else {
         alerta.classList.add('hidden');
         alerta.style.display = 'none';
     }
-    }
-
-function guardarNombreClase() {
-  const input = document.getElementById('nombre-clase');
-  const nombre = input.value.trim();
-
-  if (!nombre) {
-    alert("⚠ Debes ingresar un nombre para la clase.");
-    return;
   }
-
-  if (nombre.length > 30) {
-    alert("⚠ El nombre no puede tener más de 30 caracteres.");
-    return;
-  }
-
-  // Aquí puedes guardar en localStorage o enviarlo a tu backend si deseas persistencia
-  console.log("Nombre de clase guardado:", nombre);
-  alert("✅ Nombre de clase guardado: " + nombre);
-}

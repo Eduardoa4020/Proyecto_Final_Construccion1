@@ -11,22 +11,31 @@ def analizar_frame(request):
     if request.method == 'POST':
         data = request.body.decode('utf-8')
         if 'imagen' not in data:
-            return JsonResponse({'error': 'No se recibió imagen'}, status=400)
+            # Siempre devuelve las claves esperadas
+            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'No se recibió imagen'}, status=400)
 
         import json
         data_json = json.loads(data)
         imagen_base64 = data_json.get('imagen', '')
         if not imagen_base64:
-            return JsonResponse({'error': 'Imagen vacía'}, status=400)
+            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'Imagen vacía'}, status=400)
 
-        header, encoded = imagen_base64.split(',', 1)
-        img_bytes = base64.b64decode(encoded)
-        nparr = np.frombuffer(img_bytes, np.uint8)
-        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        try:
+            header, encoded = imagen_base64.split(',', 1)
+            img_bytes = base64.b64decode(encoded)
+            nparr = np.frombuffer(img_bytes, np.uint8)
+            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        except Exception as e:
+            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': str(e)}, status=400)
 
         print("Frame recibido y analizado")
 
         resultados = analizar_imagen(frame)
-        return JsonResponse(resultados)
+        # Asegura que siempre existan las claves
+        return JsonResponse({
+            'atentos': resultados.get('atentos', 0),
+            'distraidos': resultados.get('distraidos', 0),
+            'somnolientos': resultados.get('somnolientos', 0)
+        })
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)

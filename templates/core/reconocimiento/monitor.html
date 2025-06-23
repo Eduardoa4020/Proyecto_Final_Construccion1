@@ -1,20 +1,11 @@
-  {% extends "components/base.html" %}
+{% extends "components/base.html" %}
   {% load static %}
   {% block content %}
   <link rel="stylesheet" href="{% static 'Authentication/css/monitor.css' %}">
   <div id="monitoring-page" class="app-page p-4 space-y-6">
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-2xl font-semibold text-gray-900">Monitoreo en tiempo real</h1>
-      <div class="flex items-baseline space-x-2">
-        <input type="text" id="nombre-clase" placeholder="Nombre de la clase" 
-              class="h-10 border border-gray-300 rounded-md px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              maxlength="50">
-        <button onclick="guardarNombreClase()" 
-                class="h-10 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
-          Guardar
-        </button>
-      </div>
-      <div class="flex items-center space-x-2">  
+      <div class="flex items-center space-x-2">
         <span id="camera-status" class="px-2 py-1 rounded-full text-xs flex items-center">
           <i class="fas fa-circle mr-1" id="camera-icon"></i>
           <span id="camera-text">Verificando cámara...</span>
@@ -109,4 +100,4 @@
 
   <script src="{% static 'Authentication/js/monitor.js' %}"></script>
   
-  {% endblock %}
+  {% endblock %}  

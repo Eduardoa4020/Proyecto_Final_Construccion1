@@ -43,5 +43,3 @@ def reportes_historicos(request):
         'reportes': queryset,
         'request': request  # para que funcione {{ request.GET... }}
     })
-
-
