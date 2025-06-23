@@ -1,15 +1,14 @@
-# monitor_ia/views.py
-
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import base64
+import base64 # Usaremos este base64, no el de cv2
 import numpy as np
 import cv2
-from monitor_ia.deteccion import analizar_imagen
+from monitor_ia.deteccion import analyze_image_for_distraction as analizar_imagen # Importa con el alias correcto
 from django.contrib.auth.decorators import login_required
 from .forms import ArchivoUploadForm
 from .models import SubirArchivo
+import json
 
 @login_required
 def subir_archivos(request):
@@ -19,7 +18,7 @@ def subir_archivos(request):
             archivo_obj = form.save(commit=False)
             archivo_obj.usuario = request.user
             archivo_obj.save()
-            return redirect('subir_archivos')  # Cambia por el nombre real de tu url
+            return redirect('subir_archivos')  # Cambia por el nombre real de tu url si es diferente
     else:
         form = ArchivoUploadForm()
 
@@ -32,33 +31,41 @@ def subir_archivos(request):
 @csrf_exempt
 def analizar_frame(request):
     if request.method == 'POST':
-        data = request.body.decode('utf-8')
-        if 'imagen' not in data:
-            # Siempre devuelve las claves esperadas
-            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'No se recibió imagen'}, status=400)
-
-        import json
-        data_json = json.loads(data)
-        imagen_base64 = data_json.get('imagen', '')
-        if not imagen_base64:
-            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'Imagen vacía'}, status=400)
-
         try:
-            header, encoded = imagen_base64.split(',', 1)
-            img_bytes = base64.b64decode(encoded)
-            nparr = np.frombuffer(img_bytes, np.uint8)
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        except Exception as e:
-            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': str(e)}, status=400)
+            data = json.loads(request.body.decode('utf-8'))
+            imagen_base64 = data.get('imagen', '')
+            if not imagen_base64:
+                return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'No se recibió imagen'}, status=400)
 
-        print("Frame recibido y analizado")
+            try:
+                # Eliminar el prefijo "data:image/jpeg;base64,"
+                if 'data:image' in imagen_base64:
+                    header, img_data = imagen_base64.split(',', 1)
+                else:
+                    img_data = imagen_base64
+                
+                # Decodificar los bytes usando la librería base64 de Python
+                img_bytes = base64.b64decode(img_data) 
+                nparr = np.frombuffer(img_bytes, np.uint8)
+                frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-        resultados = analizar_imagen(frame)
-        # Asegura que siempre existan las claves
-        return JsonResponse({
-            'atentos': resultados.get('atentos', 0),
-            'distraidos': resultados.get('distraidos', 0),
-            'somnolientos': resultados.get('somnolientos', 0)
-        })
+                if frame is None:
+                    return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'Error al decodificar la imagen'}, status=400)
+            except Exception as e:
+                # Captura errores específicos de decodificación o procesamiento de imagen
+                return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': f'Error al procesar la imagen: {str(e)}'}, status=400)
+
+            print("Frame recibido y analizado")
+            # Pasa el frame de OpenCV directamente a la función de IA
+            resultados = analizar_imagen(frame) 
+            
+            return JsonResponse({
+                'atentos': resultados.get('atentos', 0),
+                'distraidos': resultados.get('distraidos', 0),
+                'somnolientos': resultados.get('somnolientos', 0)
+            })
+        except json.JSONDecodeError:
+            # Captura errores si el cuerpo de la solicitud no es JSON válido
+            return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'JSON inválido'}, status=400)
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
