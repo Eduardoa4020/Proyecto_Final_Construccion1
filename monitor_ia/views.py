@@ -1,10 +1,33 @@
 # monitor_ia/views.py
+
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import base64
 import numpy as np
 import cv2
 from monitor_ia.deteccion import analizar_imagen
+from django.contrib.auth.decorators import login_required
+from .forms import ArchivoUploadForm
+from .models import SubirArchivo
+
+@login_required
+def subir_archivos(request):
+    if request.method == 'POST':
+        form = ArchivoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            archivo_obj = form.save(commit=False)
+            archivo_obj.usuario = request.user
+            archivo_obj.save()
+            return redirect('subir_archivos')  # Cambia por el nombre real de tu url
+    else:
+        form = ArchivoUploadForm()
+
+    archivos = SubirArchivo.objects.filter(usuario=request.user).order_by('-fecha_subida')
+    return render(request, 'monitor_ia/subir_archivos.html', {
+        'form': form,
+        'archivos': archivos
+    })
 
 @csrf_exempt
 def analizar_frame(request):
