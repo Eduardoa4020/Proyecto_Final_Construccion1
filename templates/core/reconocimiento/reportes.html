@@ -1,6 +1,66 @@
-{% extends "components/base.html" %}
+{% extends "components/base.html" %} 
 {% load static %}
+{% block title %}  Reportes Históricos - MonitorAula {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'Authentication/css/reportes.css' %}" />
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Reportes Históricos</h1>
+
+    <!-- Filtro por fecha -->
+    <div class="mb-6 bg-white p-4 rounded shadow">
+        <form id="filtro-reporte" method="get" action="" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Desde:</label>
+          <input type="date" name="desde" value="{{ request.GET.desde }}" class="w-full p-2 border rounded" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Hasta:</label>
+          <input type="date" name="hasta" value="{{ request.GET.hasta }}" class="w-full p-2 border rounded" />
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+            <i class="fas fa-search mr-2"></i> Filtrar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla de reportes -->
+    <div class="bg-white shadow rounded-lg p-4 overflow-auto">
+      <table class="min-w-full table-auto">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700 text-sm font-semibold">
+            <th class="px-4 py-2 text-left">Fecha</th>
+            <th class="px-4 py-2 text-left">Clase</th>
+            <th class="px-4 py-2 text-left">Nivel de Atención (%)</th>
+            <th class="px-4 py-2 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for reporte in reportes %}
+                <tr class="border-t hover:bg-gray-50 text-sm">
+                <td class="px-4 py-2">{{ reporte.fecha }}</td>
+                <td class="px-4 py-2">{{ reporte.clase }}</td>
+                <td class="px-4 py-2">{{ reporte.nivel_atencion }}%</td>
+                <td class="px-4 py-2">
+                    <a href="{% url 'ver_reporte' reporte.id %}" class="text-blue-600 hover:underline">
+                    <i class="fas fa-eye mr-1"></i>Ver
+                    </a>
+                    <a href="{% url 'descargar_reporte' reporte.id %}" class="text-green-600 hover:underline ml-3">
+                    <i class="fas fa-download mr-1"></i>Descargar
+                    </a>
+                </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4" class="text-center py-4">No hay reportes en ese rango de fechas.</td></tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
 
 {% endblock %}

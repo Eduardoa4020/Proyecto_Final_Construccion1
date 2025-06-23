@@ -14,3 +14,13 @@ class Subir_mp4(models.Model):
 
     def __str__(self):
         return self.titulo
+# monitor_ia/models.py
+from django.db import models
+
+class Monitoreo(models.Model):
+    nombre_clase = models.CharField(max_length=100)
+    fecha = models.DateField()
+    nivel_atencion = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.nombre_clase} - {self.fecha}"

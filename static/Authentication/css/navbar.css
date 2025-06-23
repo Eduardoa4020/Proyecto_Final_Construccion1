@@ -14,6 +14,8 @@ body {
   padding: 0 2rem;
   background-color: #f8f9fa;
   box-sizing: border-box;
+  border-bottom: 1px solid #d1d5db; /* color gris claro */
+
 }
 
 .menu-logo,
@@ -54,8 +56,8 @@ body {
 }
 
 .logo-text {
-  font-size: 1.8rem;
-  font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: 500 ;
   color: #000;
 }
 
@@ -104,20 +106,15 @@ body {
 .btn-primary:hover {
    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
 }
-
-.menu-toggle {
-  display: none;
+.menu-icon {
+  font-size: 1.3rem;     /* Tamaño del ícono (ajusta según lo que necesites) */
+  color: #000;           /* Color del ícono */
+  text-shadow: 0 0 2px rgba(85, 84, 84, 0.548); /* Simula más grosor */
   cursor: pointer;
-  z-index: 20;
 }
 
-.menu-toggle span {
-  width: 1.875rem;
-  height: 0.25rem;
-  background-color: black;
-  margin: 0.375rem 0;
-  transition: 0.3s;
-}
+
+
 
 @media (max-width: 48rem) {
   .menu-toggle {

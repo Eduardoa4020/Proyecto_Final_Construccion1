@@ -1,192 +1,112 @@
-{% extends "components/base.html" %}
-{% load static %}
-{% block content %}
-<link rel="stylesheet" href="{% static 'Authentication/css/monitor.css' %}">
-<div id="monitoring-page" class="app-page p-4 space-y-6">
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-semibold text-gray-900">Monitoreo en tiempo real</h1>
-    <div class="flex items-center space-x-2">
-      <span id="camera-status" class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs flex items-center">
-        <i class="fas fa-circle text-green-500 mr-1"></i> Cámara conectada
-      </span>
-      <select id="class-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 rounded-md">
-        <option value="math">Matemáticas</option>
-        <option value="physics">Física</option>
-        <option value="chemistry">Química</option>
-        <option value="biology">Biología</option>
-      </select>
-      <!-- Botón de subida de archivos -->
-      <label for="file-upload" class="px-3 py-1 bg-blue-600 text-white rounded-md flex items-center cursor-pointer hover:bg-blue-700 transition">
-        <i class="fas fa-upload mr-1"></i> Subir archivo
-        <input id="file-upload" type="file" class="hidden" />
-      </label>
+  {% extends "components/base.html" %}
+  {% load static %}
+  {% block content %}
+  <link rel="stylesheet" href="{% static 'Authentication/css/monitor.css' %}">
+  <div id="monitoring-page" class="app-page p-4 space-y-6">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-semibold text-gray-900">Monitoreo en tiempo real</h1>
+      <div class="flex items-baseline space-x-2">
+        <input type="text" id="nombre-clase" placeholder="Nombre de la clase" 
+              class="h-10 border border-gray-300 rounded-md px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              maxlength="50">
+        <button onclick="guardarNombreClase()" 
+                class="h-10 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
+          Guardar
+        </button>
+      </div>
+      <div class="flex items-center space-x-2">  
+        <span id="camera-status" class="px-2 py-1 rounded-full text-xs flex items-center">
+          <i class="fas fa-circle mr-1" id="camera-icon"></i>
+          <span id="camera-text">Verificando cámara...</span>
+        </span>
+        
+        <label for="file-upload" class="px-3 py-1 bg-blue-600 text-white rounded-md flex items-center cursor-pointer hover:bg-blue-700 transition">
+          <i class="fas fa-upload mr-1"></i> Subir archivo
+          <input id="file-upload" type="file" class="hidden" />
+        </label>
+      </div>
+    </div>
+  
+    <div class="flex justify-center">
+      <div class="w-full lg:w-4/5 xl:w-2/3">
+        <div class="bg-white p-4 rounded-lg shadow">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-medium">Vista en vivo</h3>
+            <div class="flex space-x-2">
+              <button id="start-monitoring" class="px-3 py-1 bg-green-600 text-white rounded-md flex items-center">
+                <i class="fas fa-play mr-1"></i> Iniciar
+              </button>
+              <button id="stop-monitoring" class="px-3 py-1 bg-red-600 text-white rounded-md flex items-center" disabled>
+                <i class="fas fa-stop mr-1"></i> Detener
+              </button>
+              <button id="reset-monitoring" class="px-3 py-1 bg-gray-600 text-white rounded-md flex items-center">
+                <i class="fas fa-undo mr-1"></i> Parar
+              </button>
+            </div>
+          </div>
+  
+          <div class="flex justify-between items-center mb-2 border-b border-gray-200 pb-2">
+            <h4 class="font-medium text-gray-700">Duración de la sesión</h4>
+            <span id="session-timer" class="text-lg font-bold text-gray-900">00:00:00</span>
+          </div>
+  
+          <div class="video-container" id="video-container">
+            <video id="video" autoplay class="video-preview" style="display:block;"></video>
+            <canvas id="snapshot" class="video-preview" style="display:none;"></canvas>
+          </div>
+  
+          <div id="attention-alert" class="mt-4 p-3 bg-red-100 text-red-800 rounded-md flex items-center animate-attention-alert hidden">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            <span> Alerta: Más del 50% de estudiantes están distraídos</span>
+          </div>
+
+          <div class="mt-6">
+            <h3 class="text-lg font-medium mb-4">Estadísticas en vivo</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">Estudiantes atentos</span>
+                  <span id="porcentaje-atentos" class="text-sm font-medium text-gray-700">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div id="barra-atentos" class="bg-green-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">Estudiantes distraídos</span>
+                  <span id="porcentaje-distraidos" class="text-sm font-medium text-gray-700">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div id="barra-distraidos" class="bg-red-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">Estudiantes somnolientos</span>
+                  <span id="porcentaje-somnolientos" class="text-sm font-medium text-gray-700">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div id="barra-somnolientos" class="bg-yellow-500 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!--<div class="mt-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-medium">Registro de eventos</h3>
+              <button class="text-sm text-white-600 hover:underline">Ver historial</button>
+            </div>
+            <div class="space-y-3 max-h-60 overflow-y-auto" id="event-log">
+              <div class="text-sm text-gray-500">Inicia el monitoreo para ver eventos...</div>
+            </div>-->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="lg:col-span-2">
-      <div class="bg-white p-4 rounded-lg shadow">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-medium">Vista en vivo</h3>
-          <div class="flex space-x-2">
-            <button id="start-monitoring" class="px-3 py-1 bg-green-600 text-white rounded-md flex items-center">
-              <i class="fas fa-play mr-1"></i> Iniciar
-            </button>
-            <button id="stop-monitoring" class="px-3 py-1 bg-red-600 text-white rounded-md flex items-center" disabled>
-              <i class="fas fa-stop mr-1"></i> Detener
-            </button>
-          </div>
-        </div>
-        <div class="video-container relative bg-gray-900 h-96 flex items-center justify-center">
-          <video id="video" width="320" height="240" autoplay style="display:block;"></video>
-          <canvas id="snapshot" width="320" height="240" style="display:none;"></canvas>
-        </div>
-        <div id="attention-alert" class="mt-4 p-3 bg-red-100 text-red-800 rounded-md flex items-center animate-attention-alert hidden">
-          <i class="fas fa-exclamation-triangle mr-2"></i>
-          <span>⚠ Alerta: Más del 50% de estudiantes están distraídos</span>
-        </div>
-      </div>
-    </div>
 
-    <div>
-      <div class="bg-white p-4 rounded-lg shadow mb-4">
-        <h3 class="text-lg font-medium mb-4">Estadísticas en vivo</h3>
-        <div class="space-y-4">
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-sm font-medium text-gray-700">Estudiantes atentos</span>
-              <span id="porcentaje-atentos" class="text-sm font-medium text-gray-700">0%</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div id="barra-atentos" class="bg-green-600 h-2.5 rounded-full" style="width: 60%"></div>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-sm font-medium text-gray-700">Estudiantes distraídos</span>
-              <span id="porcentaje-distraidos" class="text-sm font-medium text-gray-700">0%</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div id="barra-distraidos" class="bg-red-600 h-2.5 rounded-full" style="width: 20%"></div>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1">
-              <span class="text-sm font-medium text-gray-700">Estudiantes somnolientos</span>
-              <span id="porcentaje-somnolientos" class="text-sm font-medium text-gray-700">0%</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-              <div id="barra-somnolientos" class="bg-yellow-500 h-2.5 rounded-full" style="width: 20%"></div>
-            </div>
-          </div>
-          <div class="pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center">
-              <h4 class="font-medium">Duración de la sesión</h4>
-              <span id="session-timer" class="text-lg font-bold">00:00:00</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white p-4 rounded-lg shadow">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-medium">Registro de eventos</h3>
-          <button class="text-sm text-blue-600 hover:underline">Ver historial</button>
-        </div>
-        <div class="space-y-3 max-h-60 overflow-y-auto" id="event-log">
-          <div class="text-sm text-gray-500">Inicia el monitoreo para ver eventos...</div>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-<script>
-let stream = null;
-let intervaloEnvio = null;
-const video = document.getElementById('video');
-const canvas = document.getElementById('snapshot');
-const context = canvas.getContext('2d');
-const btnIniciar = document.getElementById('start-monitoring');
-const btnDetener = document.getElementById('stop-monitoring');
-const alerta = document.getElementById('attention-alert');
-
-// Manejo de subida de archivos
-document.getElementById('file-upload').addEventListener('change', function(event) {
-  const file = event.target.files[0];
-  if (file) {
-    alert('Archivo seleccionado: ' + file.name);
-    // Aquí puedes agregar la lógica para procesar o enviar el archivo al backend
-  }
-});
-
-btnIniciar.addEventListener('click', async () => {
-  if (!stream) {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-      video.play();
-      video.style.display = 'block';      // <-- Mostrar video
-      canvas.style.display = 'none';      // <-- Ocultar canvas
-      btnIniciar.disabled = true;
-      btnDetener.disabled = false;
-
-      intervaloEnvio = setInterval(() => {
-        capturarFrame();
-      }, 5000);
-
-    } catch (error) {
-      alert("No se pudo acceder a la cámara.");
-    }
-  }
-});
-
-btnDetener.addEventListener('click', () => {
-  clearInterval(intervaloEnvio);
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  canvas.style.display = 'block';
-  video.style.display = 'none';
-
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    video.srcObject = null;
-    stream = null;
-    btnIniciar.disabled = false;
-    btnDetener.disabled = true;
-  }
-});
-
-function capturarFrame() {
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  const imagenBase64 = canvas.toDataURL('image/jpeg');
-  enviarFrameAlBackend(imagenBase64);
-}
-
-function enviarFrameAlBackend(imagenBase64) {
-  fetch('/api/ia/analizar-imagen/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ imagen: imagenBase64 })
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Actualiza las gráficas aquí
-    actualizarGraficas(data);
-  })
-  .catch(error => {
-    console.error('Error enviando frame al backend:', error);
-  });
-}
-
-function actualizarGraficas(data) {
-  // Ejemplo: actualiza barras de progreso
-  document.getElementById('barra-atentos').style.width = data.atentos + '%';
-  document.getElementById('barra-distraidos').style.width = data.distraidos + '%';
-  document.getElementById('barra-somnolientos').style.width = data.somnolientos + '%';
-
-  document.getElementById('porcentaje-atentos').innerText = data.atentos + '%';
-  document.getElementById('porcentaje-distraidos').innerText = data.distraidos + '%';
-  document.getElementById('porcentaje-somnolientos').innerText = data.somnolientos + '%';
-}
-</script>
-{% endblock %}
+  <script src="{% static 'Authentication/js/monitor.js' %}"></script>
+  
+  {% endblock %}

@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'Authentication',  # Your custom app
     'monitor_ia',
     'storages',
+    'reconocimiento',
+
 ]
 
 MIDDLEWARE = [
@@ -75,6 +77,8 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [

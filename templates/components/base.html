@@ -10,16 +10,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="{% static 'Authentication/favicon.ico' %}" type="image/x-icon">
-  <!-- CSS personalizado -->
-  <link rel="stylesheet" href="{% static 'Authentication/css/navbar.css' %}">
+  
 </head>
 
 <body>
+  <link rel="stylesheet" href="{% static 'Authentication/css/navbar.css' %}">
   <!-- Barra de navegación -->
   <header class="navbar">
     {% if user.is_authenticated %}
-      <div class="menu-logo" onclick="toggleMenu()">
-        <img src="{% static 'Authentication/image/menu.png' %}" alt="Menu">
+      <div class="menu-icon" onclick="toggleMenu()">
+         <i class="fas fa-bars fa-lg"></i>
       </div>
     {% endif %}
 
