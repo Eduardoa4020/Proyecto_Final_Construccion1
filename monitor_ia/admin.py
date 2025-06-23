@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Subir_mp4
+from .models import SubirArchivo
 
-@admin.register(Subir_mp4)
-class SubirMp4Admin(admin.ModelAdmin):
-    list_display = ('titulo', 'video', 'fecha_subida')
-    search_fields = ('titulo',)
+@admin.register(SubirArchivo)
+class SubirArchivoAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'titulo', 'archivo', 'fecha_subida')
+    search_fields = ('titulo', 'usuario__username')
     list_filter = ('fecha_subida',)
