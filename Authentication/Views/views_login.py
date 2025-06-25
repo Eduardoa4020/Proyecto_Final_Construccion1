@@ -110,14 +110,14 @@ def set_new_password_view(request):
 
 
 def send_verification_email(user_email, verification_code):
-    subject = 'Tu código de verificación - MODAMIND'
+    subject = 'Tu código de verificación - MONITOR_AU'
 
     # Cargar el contenido HTML del correo
     html_message = render_to_string(
         'core/password_reset/emails/verification_email.html',  # Plantilla HTML del correo
         {
             'verification_code': verification_code,
-            'app_name': 'MODAMIND'
+            'app_name': 'MONITOR_AU'
         }
     )
 
