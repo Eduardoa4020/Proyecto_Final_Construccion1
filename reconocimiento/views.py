@@ -11,6 +11,10 @@ def monitor(request):
     return render(request, 'core/reconocimiento/monitor.html')
 
 @login_required
+def monitor_oflime(request):
+    return render(request, 'core/reconocimiento/monitor_oflime.html')
+
+@login_required
 def reportes(request):
     return render(request, 'core/reconocimiento/reportes.html')
 

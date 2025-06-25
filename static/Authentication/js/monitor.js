@@ -2,6 +2,8 @@ let stream = null;
 let intervaloEnvio = null;
 let timerInterval = null;
 let elapsedTime = 0;
+let mediaRecorder = null;
+let recordedChunks = [];
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('snapshot');
@@ -11,6 +13,13 @@ const btnDetener = document.getElementById('stop-monitoring');
 const btnReset = document.getElementById('reset-monitoring');
 const alerta = document.getElementById('attention-alert'); // Ya definida
 const timerDisplay = document.getElementById('session-timer');
+const btnDescargarGrabacion = document.createElement('a');
+
+btnDescargarGrabacion.textContent = "Descargar grabación";
+btnDescargarGrabacion.className = "px-3 py-1 bg-blue-600 text-white rounded-md flex items-center mt-4";
+btnDescargarGrabacion.style.display = "none";
+btnDescargarGrabacion.download = "grabacion.webm";
+document.querySelector('#monitoring-page').appendChild(btnDescargarGrabacion);
 
 async function verificarCamara() {
   try {
@@ -90,6 +99,22 @@ btnIniciar.addEventListener('click', async () => {
       document.getElementById('video-container').classList.add('expandido');
       intervaloEnvio = setInterval(() => capturarFrame(), 5000); // Envía cada 5 segundos
       startTimer();
+
+      // --- INICIO GRABACIÓN ---
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      mediaRecorder.ondataavailable = function(e) {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+      mediaRecorder.onstop = function() {
+        // Crear enlace de descarga
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        btnDescargarGrabacion.href = url;
+        btnDescargarGrabacion.style.display = "inline-flex";
+      };
+      mediaRecorder.start();
+      // --- FIN INICIO GRABACIÓN ---
     } catch (error) {
       alert("No se pudo acceder a la cámara. Asegúrate de tener una cámara conectada y de dar permisos.");
       console.error("Error al iniciar la cámara:", error);
@@ -108,6 +133,12 @@ btnDetener.addEventListener('click', () => {
   canvas.style.display = 'block';
   video.style.display = 'none';
 
+  // --- DETENER GRABACIÓN ---
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+  // --- FIN DETENER GRABACIÓN ---
+
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
     video.srcObject = null;
@@ -119,6 +150,7 @@ btnDetener.addEventListener('click', () => {
   }
 });
 
+// Opcional: Oculta el botón de descarga al resetear
 btnReset.addEventListener('click', () => {
   if (intervaloEnvio) clearInterval(intervaloEnvio);
   if (stream) {
@@ -134,6 +166,7 @@ btnReset.addEventListener('click', () => {
   btnIniciar.disabled = false; // Habilitar iniciar
   btnDetener.disabled = true; // Deshabilitar detener
   btnReset.disabled = true; // Deshabilitar reset después de resetear todo
+  btnDescargarGrabacion.style.display = "none";
   // Opcional: limpiar los porcentajes en la UI
   actualizarGraficas({ atentos: 0, distraidos: 0, somnolientos: 0 });
 });

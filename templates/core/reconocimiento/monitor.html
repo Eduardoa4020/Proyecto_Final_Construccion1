@@ -1,4 +1,4 @@
-  {% extends "components/base.html" %}
+{% extends "components/base.html" %}
   {% load static %}
   {% block content %}
   <link rel="stylesheet" href="{% static 'Authentication/css/monitor.css' %}">
@@ -11,10 +11,13 @@
           <span id="camera-text">Verificando cámara...</span>
         </span>
         
-        <label for="file-upload" class="px-3 py-1 bg-blue-600 text-white rounded-md flex items-center cursor-pointer hover:bg-blue-700 transition">
-          <i class="fas fa-upload mr-1"></i> Subir archivo
-          <input id="file-upload" type="file" class="hidden" />
-        </label>
+        <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'subir_archivos' %}">
+          {% csrf_token %}
+          <label for="file-upload" class="px-3 py-1 bg-blue-600 text-white rounded-md flex items-center cursor-pointer hover:bg-blue-700 transition">
+            <i class="fas fa-upload mr-1"></i> Subir archivo
+            <input id="file-upload" name="archivo" type="file" accept="video/*" class="hidden" onchange="document.getElementById('upload-form').submit();" />
+          </label>
+        </form>
       </div>
     </div>
   
@@ -99,5 +102,5 @@
   </div>
 
   <script src="{% static 'Authentication/js/monitor.js' %}"></script>
-  {% endblock %}  
+  {% endblock %}
 
