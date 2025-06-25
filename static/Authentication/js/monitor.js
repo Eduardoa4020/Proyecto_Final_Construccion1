@@ -215,13 +215,6 @@ function actualizarGraficas(data) {
   document.getElementById('porcentaje-distraidos').innerText = distraidos + '%';
   document.getElementById('porcentaje-somnolientos').innerText = somnolientos + '%';
 
-  // Lógica de mostrar/ocultar alerta
-  const alerta = document.getElementById('attention-alert');
-  if (distraidos >= 50) {
-      alerta.classList.remove('hidden');
-      alerta.style.display = 'flex';
-  } else {
-      alerta.classList.add('hidden');
-      alerta.style.display = 'none';
-  }
+    // Ejemplo: para activar una alerta desde cualquier JS
+    // agregarNotificacion('Alerta: Más del 50% de estudiantes están distraídos');
 }
