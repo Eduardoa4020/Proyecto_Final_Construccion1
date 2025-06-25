@@ -88,3 +88,6 @@ def cambiar_clave_usuario(request, id):
     usuario = get_object_or_404(Usuario, id=id)
     # Lógica para cambiar clave (puedes implementarla luego)
     return render(request, 'cambiar_clave.html', {'usuario': usuario})
+
+def configuracion_view(request):
+    return render(request, 'configuracion.html')
