@@ -1,21 +1,20 @@
 {% extends "components/base.html" %}
 {% load static %}
-
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <title>MonitorAula - Inicio</title>
-    <link rel="stylesheet" href="{% static 'Authentication/css/home.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <section class="welcome-text">
-    <h2>Bienvenido a MonitorAula</h2>
-    <p>
-        Este sistema usa inteligencia artificial y visión por cámara para analizar la atención de los estudiantes en tiempo real.<br>
-        Detecta signos de somnolencia y distracción, ayudando a mejorar el aprendizaje y el ambiente en el aula.<br><br>
-        <strong>MonitorAula</strong> es tu aliado para potenciar la concentración y el rendimiento académico.
-    </p>
-   
-</section>
+<div class="flex min-h-screen">
+<link rel="stylesheet" href="{% static 'Authentication/css/home.css' %}">
+    <div class="left-side w-1/2 h-screen" style="background: #111 url({% static 'Authentication/image/homeimage.png' %}) no-repeat center center; background-size: cover;">
+        <!-- Imagen de fondo -->
+    </div>
+    <div class="right-side w-1/2 h-screen flex items-center justify-center bg-white">
+        <section class="welcome-text max-w-xl text-left">
+            <h2 class="text-4xl font-bold mb-6">Bienvenido a MonitorAula</h2>
+            <p class="text-lg leading-relaxed text-gray-700">
+                Este sistema usa inteligencia artificial y visión por cámara para analizar la atención de los estudiantes en tiempo real.<br>
+                Detecta signos de somnolencia y distracción, ayudando a mejorar el aprendizaje y el ambiente en el aula.<br><br>
+                <strong>MonitorAula</strong> es tu aliado para potenciar la concentración y el rendimiento académico.
+            </p>
+        </section>
+    </div>
+</div>
 {% endblock %}
-

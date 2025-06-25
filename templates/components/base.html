@@ -25,7 +25,7 @@
 
     <div class="navbar-logo">
       {% if user.is_authenticated %}
-        <a href="#" onclick="handleLogoClick(event)">
+        <a href="{% url 'home' %}">
           <img src="{% static 'Authentication/image/logo.png' %}" alt="Logo" class="logo-img">
           <span class="logo-text">MonitorAula</span>
         </a>
