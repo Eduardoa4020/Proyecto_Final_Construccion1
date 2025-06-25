@@ -47,3 +47,44 @@ def reportes_historicos(request):
         'reportes': queryset,
         'request': request  # para que funcione {{ request.GET... }}
     })
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Usuario
+from django.utils import timezone
+
+
+def gestion_usuarios_view(request):
+    usuarios = Usuario.objects.all()
+    return render(request, 'gestion_usuarios.html', {'usuarios': usuarios})
+
+def crear_usuario(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        correo = request.POST['correo']
+        rol = request.POST['rol']
+        ultimo_acceso = timezone.now().strftime("%d/%m/%Y %H:%M")
+
+        Usuario.objects.create(
+            nombre=nombre,
+            correo=correo,
+            rol=rol,
+            estado='Activo',  # Se asigna automáticamente
+            ultimo_acceso=ultimo_acceso
+        )
+        return redirect('gestion_usuarios')
+    return render(request, 'crear_usuario.html')
+
+def editar_usuario(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    # Lógica para editar usuario (puedes mejorarla después)
+    return render(request, 'editar_usuario.html', {'usuario': usuario})
+
+def eliminar_usuario(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    usuario.delete()
+    return redirect('gestion_usuarios')
+
+def cambiar_clave_usuario(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    # Lógica para cambiar clave (puedes implementarla luego)
+    return render(request, 'cambiar_clave.html', {'usuario': usuario})

@@ -1,6 +1,116 @@
 {% extends "components/base.html" %}
 {% load static %}
-
 {% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Usuarios - MonitorAula</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-semibold text-gray-900">Gestión de Usuarios</h1>
+      <button id="new-user-button" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        <i class="fas fa-user-plus mr-2"></i> Nuevo Usuario
+      </button>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="bg-white rounded-lg shadow overflow-x-auto">
+      <table class="min-w-full table-auto text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th class="px-6 py-3">Nombre</th>
+            <th class="px-6 py-3">Correo</th>
+            <th class="px-6 py-3">Rol</th>
+            <th class="px-6 py-3">Estado</th>
+            <th class="px-6 py-3">Último Acceso</th>
+            <th class="px-6 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios %}
+          <tr class="bg-white border-b hover:bg-gray-50">
+            <td class="px-6 py-4 font-medium text-gray-900">{{ usuario.nombre }}</td>
+            <td class="px-6 py-4">{{ usuario.correo }}</td>
+            <td class="px-6 py-4">{{ usuario.rol }}</td>
+            <td class="px-6 py-4">
+              {% if usuario.estado == "Activo" %}
+              <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Activo</span>
+              {% else %}
+              <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Inactivo</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4">{{ usuario.ultimo_acceso }}</td>
+            <td class="px-6 py-4 flex space-x-2">
+              <a href="{% url 'editar_usuario' usuario.id %}" class="text-blue-600 hover:underline"><i class="fas fa-edit"></i></a>
+              <a href="{% url 'eliminar_usuario' usuario.id %}" class="text-red-600 hover:underline"><i class="fas fa-trash-alt"></i></a>
+              <a href="{% url 'cambiar_clave_usuario' usuario.id %}" class="text-yellow-600 hover:underline"><i class="fas fa-key"></i></a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay usuarios registrados.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal para crear usuario -->
+  <div id="user-modal" class="fixed z-50 inset-0 overflow-y-auto hidden bg-black bg-opacity-50">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+        <h2 class="text-xl font-bold mb-4">Nuevo Usuario</h2>
+        <form id="user-form" method="POST" action="{% url 'crear_usuario' %}" class="space-y-4">
+          {% csrf_token %}
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700">Nombre</label>
+            <input type="text" name="nombre" id="username" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Correo</label>
+            <input type="email" name="correo" id="email" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+          </div>
+          <div>
+            <label for="rol" class="block text-sm font-medium text-gray-700">Rol</label>
+            <select name="rol" id="rol" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+              <option value="">Selecciona un rol</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Docente">Docente</option>
+              <option value="Observador">Observador</option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-2 pt-4">
+            <button type="button" id="cancel-user-button" class="px-4 py-2 bg-gray-300 rounded-md">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Guardar</button>
+          </div>
+        </form>
+        <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onclick="document.getElementById('user-modal').classList.add('hidden')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('new-user-button').addEventListener('click', function () {
+      document.getElementById('user-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-user-button').addEventListener('click', function () {
+      document.getElementById('user-modal').classList.add('hidden');
+    });
+  </script>
+</body>
+</html>
+
+
 
 {% endblock %}
