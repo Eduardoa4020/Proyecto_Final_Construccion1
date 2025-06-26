@@ -7,7 +7,7 @@ import cv2
 from monitor_ia.deteccion import analyze_image_for_distraction as analizar_imagen # Importa con el alias correcto
 from django.contrib.auth.decorators import login_required
 from .forms import ArchivoUploadForm
-from .models import SubirArchivo
+from .models import SubirArchivo, Usuario
 import json
 
 @login_required
@@ -69,3 +69,9 @@ def analizar_frame(request):
             return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'JSON inválido'}, status=400)
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@login_required
+def gestion_usuarios(request):
+    # Solo muestra los usuarios creados por el usuario actual
+    usuarios = Usuario.objects.filter(usuario_padre=request.user)
+    return render(request, 'core/reconocimiento/usuarios.html', {'usuarios': usuarios})

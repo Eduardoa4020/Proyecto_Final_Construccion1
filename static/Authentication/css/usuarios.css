@@ -1,0 +1,28 @@
+/* Estilo para el mensaje de éxito (verde) */
+.success-message {
+  background-color: #d1fae5;  /* Fondo verde claro */
+  color: #10b981;  /* Texto verde */
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: none;  /* Oculto por defecto */
+  animation: fadeOut 5s forwards;  /* Animación de desaparición */
+}
+
+/* Estilo para el mensaje de error (rojo) */
+.error-message {
+  background-color: #fee2e2;  /* Fondo rojo claro */
+  color: #ef4444;  /* Texto rojo */
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: none;  /* Oculto por defecto */
+  animation: fadeOut 5s forwards;  /* Animación de desaparición */
+}
+
+/* Animación para que el mensaje desaparezca */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

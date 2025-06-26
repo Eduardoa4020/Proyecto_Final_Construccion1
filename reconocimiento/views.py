@@ -11,10 +11,6 @@ def monitor(request):
     return render(request, 'core/reconocimiento/monitor.html')
 
 @login_required
-def monitor_oflime(request):
-    return render(request, 'core/reconocimiento/monitor_oflime.html')
-
-@login_required
 def reportes(request):
     return render(request, 'core/reconocimiento/reportes.html')
 
@@ -49,35 +45,41 @@ def reportes_historicos(request):
     })
 
 from django.shortcuts import render, redirect, get_object_or_404
+from Authentication.models import CustomUser as User
+from django.contrib import messages
 from .models import Usuario
-from django.utils import timezone
-
+from .forms import UsuarioForm  # Asegúrate de importar el formulario
 
 def gestion_usuarios_view(request):
     usuarios = Usuario.objects.all()
-    return render(request, 'gestion_usuarios.html', {'usuarios': usuarios})
+    return render(request, 'core/reconocimiento/usuarios.html', {'usuarios': usuarios})
 
 def crear_usuario(request):
     if request.method == 'POST':
-        nombre = request.POST['nombre']
-        correo = request.POST['correo']
-        rol = request.POST['rol']
-        ultimo_acceso = timezone.now().strftime("%d/%m/%Y %H:%M")
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            usuario = form.save(commit=False)
+            usuario.usuario_padre = request.user
+            usuario.save()
 
-        Usuario.objects.create(
-            nombre=nombre,
-            correo=correo,
-            rol=rol,
-            estado='Activo',  # Se asigna automáticamente
-            ultimo_acceso=ultimo_acceso
-        )
-        return redirect('gestion_usuarios')
-    return render(request, 'crear_usuario.html')
+            messages.success(request, "El usuario se ha creado exitosamente.")
+            return redirect('gestion_usuarios')
+        else:
+            messages.error(request, "Error al crear el usuario. Por favor, corrige los errores.")
+            return redirect('gestion_usuarios')
+    else:
+        form = UsuarioForm()
+    return render(request, 'core/reconocimiento/crear_usuario.html', {'form': form})
 
 def editar_usuario(request, id):
     usuario = get_object_or_404(Usuario, id=id)
-    # Lógica para editar usuario (puedes mejorarla después)
-    return render(request, 'editar_usuario.html', {'usuario': usuario})
+    if request.method == 'POST':
+        usuario.nombre = request.POST.get('nombre')
+        usuario.correo = request.POST.get('correo')
+        usuario.rol = request.POST.get('rol')
+        usuario.save()
+        return redirect('gestion_usuarios')
+    return render(request, 'core/reconocimiento/editar_usuario.html', {'usuario': usuario})
 
 def eliminar_usuario(request, id):
     usuario = get_object_or_404(Usuario, id=id)
@@ -86,8 +88,9 @@ def eliminar_usuario(request, id):
 
 def cambiar_clave_usuario(request, id):
     usuario = get_object_or_404(Usuario, id=id)
-    # Lógica para cambiar clave (puedes implementarla luego)
-    return render(request, 'cambiar_clave.html', {'usuario': usuario})
+    # Aquí puedes agregar lógica para cambiar clave (si lo implementas)
+    return render(request, 'core/reconocimiento/cambiar_clave.html', {'usuario': usuario})
+
 
 def configuracion_view(request):
     return render(request, 'configuracion.html')
