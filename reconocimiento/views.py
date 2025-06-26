@@ -35,24 +35,6 @@ def configuracion(request):
         return redirect('home')
     return render(request, 'core/reconocimiento/configuracion.html')
 
-def reportes_historicos(request):
-    queryset = Monitoreo.objects.all()
-    desde = request.GET.get("desde")
-    hasta = request.GET.get("hasta")
-    nombre = request.GET.get("nombre")
-
-    if desde:
-        queryset = queryset.filter(fecha__gte=desde)
-    if hasta:
-        queryset = queryset.filter(fecha__lte=hasta)
-    if nombre:
-        queryset = queryset.filter(nombre_clase__icontains=nombre)
-
-    return render(request, 'core/reconocimiento/reportes.html', {
-        'reportes': queryset,
-        'request': request
-    })
-
 def configuracion_view(request):
     return render(request, 'configuracion.html')
 

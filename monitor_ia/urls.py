@@ -1,10 +1,8 @@
-# monitor_ia/urls.py
 from django.urls import path
-from . import views 
+from . import views
 
 urlpatterns = [
-    path('analizar-imagen/', views.analizar_frame, name='analizar_frame'),
-    path('monitor/', views.subir_archivos, name='subir_archivos'),
-    path('atencion/', views.atencion_data, name='atencion_data'),
-    path('guardar_reporte_historico/', views.guardar_reporte_historico, name='guardar_reporte_historico'),
+    path('analizar-imagen/', views.analizar_frame, name='analizar_frame'),  # Ruta para analizar imágenes
+    path('subir-archivos/', views.subir_archivos, name='subir_archivos'),  # Ruta para subir archivos
+    path('dashboard/', views.dashboard, name='dashboard'),  # Ruta para mostrar el dashboard
 ]

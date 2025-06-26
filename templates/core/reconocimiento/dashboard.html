@@ -1,8 +1,8 @@
 {% extends "components/base.html" %}
 {% load static %}
-{%block title%}Dashboard - Sistema de Monitoreo{%endblock%}
+{% block title %}Dashboard - Sistema de Monitoreo{% endblock %}
 
-{%block content%}
+{% block content %}
 
 <link rel="stylesheet" href="{% static 'Authentication/css/Dashboard.css' %}">
 
@@ -21,7 +21,7 @@
           <i class="fas fa-brain text-3xl text-green-500"></i>
           <div class="ml-5">
             <p class="text-sm text-gray-500">Nivel de atención promedio</p>
-            <p class="text-lg font-semibold text-gray-900">78%</p>
+            <p class="text-lg font-semibold text-gray-900">{{ atencion_promedio }}%</p>
           </div>
         </div>
       </div>
@@ -29,8 +29,8 @@
         <div class="flex items-center">
           <i class="fas fa-users text-3xl text-red-500"></i>
           <div class="ml-5">
-            <p class="text-sm text-gray-500">nivel de distracion promedio</p>
-            <p class="text-lg font-semibold text-gray-900">22%</p>
+            <p class="text-sm text-gray-500">Nivel de distracción promedio</p>
+            <p class="text-lg font-semibold text-gray-900">{{ distraccion_promedio }}%</p>
           </div>
         </div>
       </div>
@@ -39,7 +39,7 @@
           <i class="fas fa-chart-line text-3xl text-yellow-500"></i>
           <div class="ml-5">
             <p class="text-sm text-gray-500">Nivel de somnolencia promedio</p>
-            <p class="text-lg font-semibold text-gray-900">%24</p>
+            <p class="text-lg font-semibold text-gray-900">{{ somnolencia_promedio }}%</p>
           </div>
         </div>
       </div>
@@ -48,23 +48,145 @@
     <!-- Gráficas -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
       <div class="bg-white shadow rounded-lg p-4">
-        <div class="flex justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">Atención promedio por minutos de la clase</h3>
-          
-        </div>
+        <h3 class="text-lg font-semibold text-gray-900">Atención promedio por 5 segundos</h3>
         <svg id="attentionByClass" width="100%" height="300"></svg>
       </div>
       <div class="bg-white shadow rounded-lg p-4">
-        <div class="flex justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">Tendencia de atención diaria</h3>
-          
-        </div>
+        <h3 class="text-lg font-semibold text-gray-900">Tendencia de atención diaria</h3>
         <svg id="attentionTrend" width="100%" height="300"></svg>
       </div>
     </div>
   </div>
-<!-- Chart.js -->
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="{% static 'Authentication/js/Dashboard.js' %}"></script>
+
+  <script>
+    // Recuperar los datos desde Django en la plantilla
+    const attentionData = {{ data_atencion_minutos|safe }};
+    const dailyAttentionData = {{ data_atencion_diaria|safe }};
+
+    // Crear la gráfica "Atención promedio por 5 segundos"
+    const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+    const width = document.getElementById("attentionByClass").clientWidth - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    const svg = d3.select("#attentionByClass")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleLinear()
+      .domain([0, d3.max(attentionData, d => d.segundos)])
+      .range([0, width]);
+
+    const y = d3.scaleLinear()
+      .domain([0, 100])
+      .range([height, 0]);
+
+    // Líneas de atención, distracción y somnolencia
+    const lineAtencion = d3.line()
+      .x(d => x(d.segundos))
+      .y(d => y(d.atencion));
+
+    const lineDistraccion = d3.line()
+      .x(d => x(d.segundos))
+      .y(d => y(d.distraccion));
+
+    const lineSomnolencia = d3.line()
+      .x(d => x(d.segundos))
+      .y(d => y(d.somnolencia));
+
+    svg.append("path")
+      .data([attentionData])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-width", 2)
+      .attr("d", lineAtencion);
+
+    svg.append("path")
+      .data([attentionData])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "red")
+      .attr("stroke-width", 2)
+      .attr("d", lineDistraccion);
+
+    svg.append("path")
+      .data([attentionData])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "yellow")
+      .attr("stroke-width", 2)
+      .attr("d", lineSomnolencia);
+
+    // Ejes de la gráfica
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x).ticks(6));
+
+    svg.append("g")
+      .call(d3.axisLeft(y).ticks(5));
+
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", -10)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "14px")
+      .attr("font-weight", "bold")
+      .text("Atención Promedio por 5 Segundos");
+
+    // Crear la gráfica "Tendencia de atención diaria"
+    const margin2 = { top: 20, right: 30, bottom: 40, left: 40 };
+    const width2 = document.getElementById("attentionTrend").clientWidth - margin2.left - margin2.right;
+    const height2 = 300 - margin2.top - margin2.bottom;
+
+    const svg2 = d3.select("#attentionTrend")
+      .attr("width", width2 + margin2.left + margin2.right)
+      .attr("height", height2 + margin2.top + margin2.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin2.left},${margin2.top})`);
+
+    const parseDate = d3.timeParse("%Y-%m-%d");
+
+    const x2 = d3.scaleTime()
+      .domain(d3.extent(dailyAttentionData, d => parseDate(d.fecha)))
+      .range([0, width2]);
+
+    const y2 = d3.scaleLinear()
+      .domain([0, 100])
+      .range([height2, 0]);
+
+    const line2 = d3.line()
+      .x(d => x2(parseDate(d.fecha)))
+      .y(d => y2(d.atencion));
+
+    svg2.append("path")
+      .data([dailyAttentionData])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-width", 2)
+      .attr("d", line2);
+
+    svg2.append("g")
+      .attr("transform", `translate(0,${height2})`)
+      .call(d3.axisBottom(x2).ticks(d3.timeDay.every(1)));
+
+    svg2.append("g")
+      .call(d3.axisLeft(y2).ticks(5));
+
+    svg2.append("text")
+      .attr("x", width2 / 2)
+      .attr("y", -10)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "14px")
+      .attr("font-weight", "bold")
+      .text("Tendencia de Atención Diaria");
+  </script>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="{% static 'Authentication/js/Dashboard.js' %}"></script>
+
 </div>
-{%endblock%}
+
+{% endblock %}
