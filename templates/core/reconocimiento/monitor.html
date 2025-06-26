@@ -10,14 +10,6 @@
           <i class="fas fa-circle mr-1" id="camera-icon"></i>
           <span id="camera-text">Verificando cámara...</span>
         </span>
-        
-        <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'subir_archivos' %}">
-          {% csrf_token %}
-          <label for="file-upload" class="px-3 py-1 bg-blue-600 text-white rounded-md flex items-center cursor-pointer hover:bg-blue-700 transition">
-            <i class="fas fa-upload mr-1"></i> Subir archivo
-            <input id="file-upload" name="archivo" type="file" accept="video/*" class="hidden" onchange="document.getElementById('upload-form').submit();" />
-          </label>
-        </form>
       </div>
     </div>
   

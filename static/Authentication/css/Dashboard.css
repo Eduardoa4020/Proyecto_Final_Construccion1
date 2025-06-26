@@ -22,12 +22,12 @@
 
  .attention-medium {
      background-color: #ffffff;
-     border-left: 4px solid #f59e0b;
+     border-left: 4px solid #ef4444;
  }
 
  .attention-low {
      background-color: #ffffff;
-     border-left: 4px solid #4472ef;
+     border-left: 4px solid #f59e0b;
  }
 
  .student-avatar {

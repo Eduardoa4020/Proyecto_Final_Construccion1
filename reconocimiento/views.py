@@ -1,10 +1,9 @@
 # reconocimiento/views.py
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from monitor_ia.models import Monitoreo
-from django.utils import timezone
-from django.contrib.auth import get_user_model
-from django.db import models
+from django.views.decorators.csrf import csrf_exempt
+
 
 def dashboard(request):
     if not request.user.is_authenticated:
@@ -56,3 +55,5 @@ def reportes_historicos(request):
 
 def configuracion_view(request):
     return render(request, 'configuracion.html')
+
+

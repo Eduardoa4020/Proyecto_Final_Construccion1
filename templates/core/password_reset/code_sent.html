@@ -1,17 +1,15 @@
-
 {% extends "components/base.html" %}
-
 {% load static %}
 {% block content %}
-<div class="login-container">
-    <div class="login-left">
+<link rel="stylesheet" href="{% static 'Authentication/css/code_sent.css' %}" />
+<div class="login-body">
+    <div class="login-container">
         <div class="login-logo">
-            <img src="{% static 'Authentication/image/Logo.jpeg' %}" alt="MODAMIND Logo">
-          <h2>Revisa tu correo</h2>
-        <p>Si el correo ingresado está registrado, recibirás un código de verificación.</p>
-        <a href="{% url 'verify_code' %}">Ingresar código</a>
-        </form>
+            <img src="{% static 'Authentication/image/Logo.png' %}" alt="MODAMIND Logo">
+            <h2>Revisa tu correo</h2>
+            <p>Si el correo ingresado está registrado, recibirás un código de verificación.</p>
+            <button class="login-logo button" onclick="window.location.href='{% url 'verify_code' %}'">Ingresar código</button>
+        </div>
     </div>
-  
 </div>
 {% endblock %}

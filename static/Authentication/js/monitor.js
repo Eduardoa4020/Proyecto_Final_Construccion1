@@ -1,3 +1,4 @@
+// monitor.js
 let stream = null;
 let intervaloEnvio = null;
 let timerInterval = null;
@@ -11,7 +12,7 @@ const context = canvas.getContext('2d');
 const btnIniciar = document.getElementById('start-monitoring');
 const btnDetener = document.getElementById('stop-monitoring');
 const btnReset = document.getElementById('reset-monitoring');
-const alerta = document.getElementById('attention-alert'); // Ya definida
+const alerta = document.getElementById('attention-alert');
 const timerDisplay = document.getElementById('session-timer');
 const btnDescargarGrabacion = document.createElement('a');
 
@@ -35,15 +36,12 @@ async function verificarCamara() {
     if (hayCamara) {
       statusSpan.classList.add('estado-conectado');
       text.textContent = 'Cámara conectada';
-      // Mover la inicialización de la cámara a aquí si quieres que la pre-visualización se active al cargar
-      // Pero para tu caso actual, está bien que se active con "Iniciar"
     } else {
       statusSpan.classList.add('estado-desconectado');
       text.textContent = 'Cámara desconectada';
     }
   } catch (error) {
     console.error('Error al verificar dispositivos:', error);
-    // Mostrar un mensaje más amigable al usuario si hay un error
     const statusSpan = document.getElementById('camera-status');
     const text = document.getElementById('camera-text');
     statusSpan.classList.remove('estado-conectado');
@@ -53,7 +51,7 @@ async function verificarCamara() {
 }
 
 verificarCamara();
-setInterval(verificarCamara, 5000); // Verifica cada 5 segundos si la cámara está conectada
+setInterval(verificarCamara, 5000);
 
 function formatTime(seconds) {
   const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
@@ -85,7 +83,6 @@ btnIniciar.addEventListener('click', async () => {
       stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.srcObject = stream;
       video.play();
-      // Ajusta el tamaño del canvas al video para evitar distorsiones
       video.addEventListener('loadedmetadata', () => {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -94,27 +91,26 @@ btnIniciar.addEventListener('click', async () => {
       canvas.style.display = 'none';
       btnIniciar.disabled = true;
       btnDetener.disabled = false;
-      btnReset.disabled = false; // Habilitar reset al iniciar
+      btnReset.disabled = false;
 
       document.getElementById('video-container').classList.add('expandido');
-      intervaloEnvio = setInterval(() => capturarFrame(), 5000); // Envía cada 5 segundos
+      intervaloEnvio = setInterval(() => capturarFrame(), 5000);
       startTimer();
 
-      // --- INICIO GRABACIÓN ---
       recordedChunks = [];
       mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
       mediaRecorder.ondataavailable = function(e) {
-        if (e.data.size > 0) recordedChunks.push(e.data);
+        if (e.data.size > 0) {
+          recordedChunks.push(e.data);
+        }
       };
       mediaRecorder.onstop = function() {
-        // Crear enlace de descarga
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
         btnDescargarGrabacion.href = url;
         btnDescargarGrabacion.style.display = "inline-flex";
       };
       mediaRecorder.start();
-      // --- FIN INICIO GRABACIÓN ---
     } catch (error) {
       alert("No se pudo acceder a la cámara. Asegúrate de tener una cámara conectada y de dar permisos.");
       console.error("Error al iniciar la cámara:", error);
@@ -126,18 +122,15 @@ btnDetener.addEventListener('click', () => {
   clearInterval(intervaloEnvio);
   stopTimer();
 
-  // Asegura que el canvas tenga el tamaño correcto antes de dibujar
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
   canvas.style.display = 'block';
   video.style.display = 'none';
 
-  // --- DETENER GRABACIÓN ---
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
     mediaRecorder.stop();
   }
-  // --- FIN DETENER GRABACIÓN ---
 
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
@@ -145,12 +138,24 @@ btnDetener.addEventListener('click', () => {
     stream = null;
     btnIniciar.disabled = false;
     btnDetener.disabled = true;
-    btnReset.disabled = false; // Mantener reset habilitado o deshabilitar si no hay sesión activa
+    btnReset.disabled = false;
     document.getElementById('video-container').classList.remove('expandido');
   }
+
+  const atencionTotal = totalFrames > 0 ? Math.round(totalAtencion / totalFrames) : 0;
+  const somnolenciaTotal = totalFrames > 0 ? Math.round(totalSomnolencia / totalFrames) : 0;
+  const distraccionTotal = totalFrames > 0 ? Math.round(totalDistraccion / totalFrames) : 0;
+
+  console.log("Enviando reporte:", atencionTotal, somnolenciaTotal, distraccionTotal);
+
+  guardarReporteHistorico(atencionTotal, somnolenciaTotal, distraccionTotal);
+
+  totalAtencion = 0;
+  totalSomnolencia = 0;
+  totalDistraccion = 0;
+  totalFrames = 0;
 });
 
-// Opcional: Oculta el botón de descarga al resetear
 btnReset.addEventListener('click', () => {
   if (intervaloEnvio) clearInterval(intervaloEnvio);
   if (stream) {
@@ -163,18 +168,16 @@ btnReset.addEventListener('click', () => {
   canvas.style.display = 'none';
   video.style.display = 'none';
   document.getElementById('video-container').classList.remove('expandido');
-  btnIniciar.disabled = false; // Habilitar iniciar
-  btnDetener.disabled = true; // Deshabilitar detener
-  btnReset.disabled = true; // Deshabilitar reset después de resetear todo
+  btnIniciar.disabled = false;
+  btnDetener.disabled = true;
+  btnReset.disabled = true;
   btnDescargarGrabacion.style.display = "none";
-  // Opcional: limpiar los porcentajes en la UI
   actualizarGraficas({ atentos: 0, distraidos: 0, somnolientos: 0 });
 });
 
 function capturarFrame() {
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  const imagenBase64 = canvas.toDataURL('image/jpeg', 0.8); // 0.8 calidad para reducir tamaño
-  // La función toDataURL ya incluye el prefijo "data:image/jpeg;base64,"
+  const imagenBase64 = canvas.toDataURL('image/jpeg', 0.8);
   enviarFrameAlBackend(imagenBase64);
 }
 
@@ -186,23 +189,25 @@ function enviarFrameAlBackend(imagenBase64) {
   })
   .then(response => {
       if (!response.ok) {
-          // Si la respuesta no es OK (ej. 400 Bad Request), lanza un error
           return response.json().then(err => { throw new Error(err.error || 'Error desconocido del servidor'); });
       }
       return response.json();
   })
   .then(data => {
       actualizarGraficas(data);
-      console.log("Resultados de IA:", data); // Para depuración
+      console.log("Resultados de IA:", data);
   })
   .catch(error => {
       console.error('Error enviando frame al backend:', error);
-      // Podrías mostrar un mensaje de error en la UI aquí
   });
 }
 
+let totalAtencion = 0;
+let totalSomnolencia = 0;
+let totalDistraccion = 0;
+let totalFrames = 0;
+
 function actualizarGraficas(data) {
-  // Asegura que los valores sean números válidos
   const atentos = isFinite(Number(data.atentos)) ? Number(data.atentos) : 0;
   const distraidos = isFinite(Number(data.distraidos)) ? Number(data.distraidos) : 0;
   const somnolientos = isFinite(Number(data.somnolientos)) ? Number(data.somnolientos) : 0;
@@ -215,6 +220,56 @@ function actualizarGraficas(data) {
   document.getElementById('porcentaje-distraidos').innerText = distraidos + '%';
   document.getElementById('porcentaje-somnolientos').innerText = somnolientos + '%';
 
-    // Ejemplo: para activar una alerta desde cualquier JS
-    // agregarNotificacion('Alerta: Más del 50% de estudiantes están distraídos');
+  totalAtencion += atentos;
+  totalSomnolencia += somnolientos;
+  totalDistraccion += distraidos;
+  totalFrames += 1;
+}
+
+function guardarReporteHistorico(atencionTotal, somnolenciaTotal, distraccionTotal) {
+    fetch('/api/ia/guardar_reporte_historico/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            atencion: atencionTotal,
+            somnolencia: somnolenciaTotal,
+            distraccion: distraccionTotal
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Error desconocido del servidor'); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Respuesta del backend:", data);
+        if (data.status === "ok") {
+            alert("Reporte guardado correctamente.");
+        } else {
+            alert("Error al guardar el reporte: " + (data.error || "Error desconocido"));
+        }
+    })
+    .catch(error => {
+        console.error("Error al guardar el reporte:", error);
+        alert("Error al guardar el reporte: " + error.message);
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }

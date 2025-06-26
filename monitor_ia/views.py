@@ -79,3 +79,33 @@ def atencion_data(request):
     ]
     return JsonResponse(data, safe=False)
 
+@csrf_exempt
+@login_required
+def guardar_reporte_historico(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            atencion = int(data.get('atencion', 0))
+            somnolencia = int(data.get('somnolencia', 0))
+            distraccion = int(data.get('distraccion', 0))
+
+            # Validar los datos
+            if not (0 <= atencion <= 100 and 0 <= somnolencia <= 100 and 0 <= distraccion <= 100):
+                return JsonResponse({'status': 'error', 'error': 'Valores inválidos'}, status=400)
+
+            # Guardar el reporte en el modelo ReporteHistorico
+            reporte = ReporteHistorico(
+                usuario=request.user,
+                atentos=atencion,
+                somnolientos=somnolencia,
+                distraidos=distraccion
+            )
+            reporte.save()
+
+            return JsonResponse({'status': 'ok', 'message': 'Reporte guardado correctamente'})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'error': 'JSON inválido'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'error': f'Error al guardar el reporte: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'status': 'error', 'error': 'Método no permitido'}, status=405)

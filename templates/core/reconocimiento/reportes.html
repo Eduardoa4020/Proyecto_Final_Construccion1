@@ -33,8 +33,10 @@
         <thead>
           <tr class="bg-gray-200 text-gray-700 text-sm font-semibold">
             <th class="px-4 py-2 text-left">Fecha</th>
-            <th class="px-4 py-2 text-left">Clase</th>
+            <th class="px-4 py-2 text-left">Usuario</th>
             <th class="px-4 py-2 text-left">Nivel de Atención (%)</th>
+            <th class="px-4 py-2 text-left">Somnolencia (%)</th>
+            <th class="px-4 py-2 text-left">Distracción (%)</th>
             <th class="px-4 py-2 text-left">Acciones</th>
           </tr>
         </thead>
@@ -42,8 +44,10 @@
             {% for reporte in reportes %}
                 <tr class="border-t hover:bg-gray-50 text-sm">
                 <td class="px-4 py-2">{{ reporte.fecha }}</td>
-                <td class="px-4 py-2">{{ reporte.clase }}</td>
-                <td class="px-4 py-2">{{ reporte.nivel_atencion }}%</td>
+                <td class="px-4 py-2">{{ reporte.usuario }}</td>
+                <td class="px-4 py-2">{{ reporte.atencion }}%</td>
+                <td class="px-4 py-2">{{ reporte.somnolencia }}%</td>
+                <td class="px-4 py-2">{{ reporte.distraccion }}%</td>
                 <td class="px-4 py-2">
                     <a href="{% url 'ver_reporte' reporte.id %}" class="text-blue-600 hover:underline">
                     <i class="fas fa-eye mr-1"></i>Ver
@@ -54,7 +58,9 @@
                 </td>
                 </tr>
             {% empty %}
-                <tr><td colspan="4" class="text-center py-4">No hay reportes en ese rango de fechas.</td></tr>
+                <tr>
+                  <td colspan="6" class="text-center">No hay reportes en ese rango de fechas.</td>
+                </tr>
             {% endfor %}
         </tbody>
       </table>

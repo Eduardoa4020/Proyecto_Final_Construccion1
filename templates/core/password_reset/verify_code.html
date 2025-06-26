@@ -1,22 +1,24 @@
 {% extends "components/base.html" %}
-
 {% load static %}
 {% block content %}
-<div class="login-container">
-    <div class="login-left">
+<link rel="stylesheet" href="{% static 'Authentication/css/verify_code.css' %}" />
+<div class="login-body">
+    <div class="login-container">
         <div class="login-logo">
-            <img src="{% static 'Authentication/image/Logo.jpeg' %}" alt="MODAMIND Logo">
-<h2>Verificación de código</h2>
-<form method="post">
-    {% csrf_token %}
-    <label for="email">Correo electrónico:</label>
-    <input type="email" name="email" required>
-    <label for="code">Código:</label>
-    <input type="text" name="code" required>
-    <button type="submit">Verificar</button>
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-</form>
+            <img src="{% static 'Authentication/image/Logo.png' %}" alt="MODAMIND Logo">
+            <h2>Verificación de código</h2>
+            <form method="post">
+                {% csrf_token %}
+                <label for="email">Correo electrónico:</label>
+                <input type="email" name="email" id="email" required>
+                <label for="code">Código:</label>
+                <input type="text" name="code" id="code" required>
+                <button type="submit">Verificar</button>
+                {% if error %}
+                    <p style="color:red;">{{ error }}</p>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
-
