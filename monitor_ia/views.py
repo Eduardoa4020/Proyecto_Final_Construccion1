@@ -70,8 +70,3 @@ def analizar_frame(request):
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
 
-@login_required
-def gestion_usuarios(request):
-    # Solo muestra los usuarios creados por el usuario actual
-    usuarios = Usuario.objects.filter(usuario_padre=request.user)
-    return render(request, 'core/reconocimiento/usuarios.html', {'usuarios': usuarios})
