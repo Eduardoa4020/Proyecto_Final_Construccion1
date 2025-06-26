@@ -7,7 +7,7 @@ import cv2
 from monitor_ia.deteccion import analyze_image_for_distraction as analizar_imagen # Importa con el alias correcto
 from django.contrib.auth.decorators import login_required
 from .forms import ArchivoUploadForm
-from .models import SubirArchivo, Usuario
+from .models import SubirArchivo
 import json
 
 @login_required
