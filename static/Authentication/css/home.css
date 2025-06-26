@@ -1,76 +1,104 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-body {
-    min-height: 100vh;
+/* styles.css */
+
+/* Estilos para la barra de navegación */
+.navbar {
+    background-color: #fff;
+    padding: 20px;
     display: flex;
-    font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    background: #f4f6fa;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.right-side {
-    width: 50vw;
-    height: 100vh;
+.navbar-logo {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: #fff;
+    cursor: pointer;
 }
-.welcome-text {
-    max-width: 520px;
-    background: rgba(255,255,255,0.92);
-    color: #222;
-    text-align: left;
-    padding: 48px 40px 40px 40px;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.12);
-    margin: 0 32px;
-    animation: fadeInUp 1s;
+
+.navbar-logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
 }
-.welcome-text h2 {
-    font-family: 'Abril Fatface', 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    font-size: 2.9em;
-    margin-bottom: 24px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: #0d47a1;
-    text-shadow: 0 2px 12px rgba(26,35,126,0.10);
+
+.navbar-logo span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0058b0;
 }
-.welcome-text p {
-    font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    font-size: 1.22em;
-    line-height: 1.8;
+
+.navbar-collapse a {
+    text-decoration: none;
+    margin-left: 20px;
     color: #333;
-    letter-spacing: 0.2px;
 }
-.welcome-text strong {
-    font-weight: 700;
-    color: #1976d2;
-    font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
-    letter-spacing: 0.5px;
+
+.navbar-collapse a:hover {
+    color: #0058b0;
 }
-@media (max-width: 900px) {
-    .left-side, .right-side {
-        width: 100vw;
-        height: 50vh;
-    }
-    body {
+
+.user-info a {
+    text-decoration: none;
+    background-color: #0058b0;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.user-info a:hover {
+    background-color: #004080;
+}
+
+/* Estilos de la página de bienvenida */
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.welcome-text {
+    max-width: 600px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.welcome-text h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #0058b0;
+    margin-bottom: 20px;
+}
+
+.welcome-text p {
+    font-size: 1.125rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.left-side {
+    background: url('../image/homeimage.png') no-repeat center center/cover;
+    height: 100vh;
+    width: 50%;
+    flex-shrink: 0;
+}
+
+
+.right-side {
+    width: 50%;
+    height: 100vh;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .flex {
         flex-direction: column;
     }
-    .welcome-text {
-        margin: 24px;
-        padding: 32px 16px;
-    }
-}
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(40px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .left-side, .right-side {
+        width: 100%;
+        height: auto;
     }
 }

@@ -52,19 +52,19 @@
           <h3 class="text-lg font-semibold text-gray-900">Atención promedio por minutos de la clase</h3>
           
         </div>
-        <canvas id="attentionByClass" class="h-72 w-full"></canvas>
+        <svg id="attentionByClass" width="100%" height="300"></svg>
       </div>
       <div class="bg-white shadow rounded-lg p-4">
         <div class="flex justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900">Tendencia de atención diaria</h3>
           
         </div>
-        <canvas id="attentionTrend" class="h-72 w-full"></canvas>
+        <svg id="attentionTrend" width="100%" height="300"></svg>
       </div>
     </div>
   </div>
 <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="{% static 'Authentication/js/Dashboard.js' %}"></script>
 </div>
 {%endblock%}

@@ -28,3 +28,13 @@ class Monitoreo(models.Model):
 
     def __str__(self):
         return f"{self.nombre_clase} - {self.fecha}"
+
+class ReporteHistorico(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    atentos = models.IntegerField(default=0)
+    distraidos = models.IntegerField(default=0)
+    somnolientos = models.IntegerField(default=0)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.timestamp} - Atentos: {self.atentos}"

@@ -7,7 +7,7 @@ import cv2
 from monitor_ia.deteccion import analyze_image_for_distraction as analizar_imagen # Importa con el alias correcto
 from django.contrib.auth.decorators import login_required
 from .forms import ArchivoUploadForm
-from .models import SubirArchivo
+from .models import SubirArchivo, ReporteHistorico
 import json
 
 @login_required
@@ -69,4 +69,13 @@ def analizar_frame(request):
             return JsonResponse({'atentos': 0, 'distraidos': 0, 'somnolientos': 0, 'error': 'JSON inválido'}, status=400)
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def atencion_data(request):
+    # Devuelve los últimos 30 registros para las gráficas
+    reportes = ReporteHistorico.objects.order_by('-timestamp')[:30][::-1]
+    data = [
+        {"minuto": i*10, "atencion": r.atentos}
+        for i, r in enumerate(reportes)
+    ]
+    return JsonResponse(data, safe=False)
 
