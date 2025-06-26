@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Usuario
-from monitor_ia.models import Monitoreo  # importa el modelo correcto
+from monitor_ia.models import Monitoreo
 from django.utils import timezone
 
 def dashboard(request):
@@ -43,7 +43,6 @@ def configuracion(request):
 
 def reportes_historicos(request):
     queryset = Monitoreo.objects.all()
-
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
     nombre = request.GET.get("nombre")
@@ -57,7 +56,7 @@ def reportes_historicos(request):
 
     return render(request, 'core/reconocimiento/reportes.html', {
         'reportes': queryset,
-        'request': request  # para que funcione {{ request.GET... }}
+        'request': request
     })
 
 def gestion_usuarios_view(request):
@@ -107,9 +106,3 @@ def cambiar_clave_usuario(request, id):
         return redirect('home')
     usuario = get_object_or_404(Usuario, id=id)
     return render(request, 'cambiar_clave.html', {'usuario': usuario})
-
-def configuracion_view(request):
-    if not request.user.is_authenticated:
-        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
-        return redirect('home')
-    return render(request, 'configuracion.html')
