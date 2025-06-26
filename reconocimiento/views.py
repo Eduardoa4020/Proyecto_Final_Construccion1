@@ -1,33 +1,47 @@
 # reconocimiento/views.py
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Usuario
+from monitor_ia.models import Monitoreo
+from django.utils import timezone
 
-@login_required
 def dashboard(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     return render(request, 'core/reconocimiento/dashboard.html')
 
-@login_required
 def monitor(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     return render(request, 'core/reconocimiento/monitor.html')
 
 @login_required
+def monitor_oflime(request):
+    return render(request, 'core/reconocimiento/monitor_oflime.html')
+
+@login_required
 def reportes(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     return render(request, 'core/reconocimiento/reportes.html')
 
-@login_required
 def usuarios(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     return render(request, 'core/reconocimiento/usuarios.html')
 
-@login_required
 def configuracion(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     return render(request, 'core/reconocimiento/configuracion.html')
-
-# reconocimiento/views.py
-from monitor_ia.models import Monitoreo  # importa el modelo correcto
 
 def reportes_historicos(request):
     queryset = Monitoreo.objects.all()
-
     desde = request.GET.get("desde")
     hasta = request.GET.get("hasta")
     nombre = request.GET.get("nombre")
@@ -41,56 +55,64 @@ def reportes_historicos(request):
 
     return render(request, 'core/reconocimiento/reportes.html', {
         'reportes': queryset,
-        'request': request  # para que funcione {{ request.GET... }}
+        'request': request
     })
 
 from django.shortcuts import render, redirect, get_object_or_404
-from Authentication.models import CustomUser as User
-from django.contrib import messages
 from .models import Usuario
-from .forms import UsuarioForm  # Asegúrate de importar el formulario
+from django.utils import timezone
+
 
 def gestion_usuarios_view(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     usuarios = Usuario.objects.all()
     return render(request, 'core/reconocimiento/usuarios.html', {'usuarios': usuarios})
 
 def crear_usuario(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            usuario = form.save(commit=False)
-            usuario.usuario_padre = request.user
-            usuario.save()
+        nombre = request.POST['nombre']
+        correo = request.POST['correo']
+        rol = request.POST['rol']
+        ultimo_acceso = timezone.now().strftime("%d/%m/%Y %H:%M")
 
-            messages.success(request, "El usuario se ha creado exitosamente.")
-            return redirect('gestion_usuarios')
-        else:
-            messages.error(request, "Error al crear el usuario. Por favor, corrige los errores.")
-            return redirect('gestion_usuarios')
-    else:
-        form = UsuarioForm()
-    return render(request, 'core/reconocimiento/crear_usuario.html', {'form': form})
+        Usuario.objects.create(
+            nombre=nombre,
+            correo=correo,
+            rol=rol,
+            estado='Activo',  # Se asigna automáticamente
+            ultimo_acceso=ultimo_acceso
+        )
+        return redirect('gestion_usuarios')
+    return render(request, 'crear_usuario.html')
 
 def editar_usuario(request, id):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     usuario = get_object_or_404(Usuario, id=id)
-    if request.method == 'POST':
-        usuario.nombre = request.POST.get('nombre')
-        usuario.correo = request.POST.get('correo')
-        usuario.rol = request.POST.get('rol')
-        usuario.save()
-        return redirect('gestion_usuarios')
-    return render(request, 'core/reconocimiento/editar_usuario.html', {'usuario': usuario})
+    # Lógica para editar usuario (puedes mejorarla después)
+    return render(request, 'editar_usuario.html', {'usuario': usuario})
 
 def eliminar_usuario(request, id):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     usuario = get_object_or_404(Usuario, id=id)
     usuario.delete()
     return redirect('gestion_usuarios')
 
 def cambiar_clave_usuario(request, id):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Debes iniciar sesión para acceder a los módulos.")
+        return redirect('home')
     usuario = get_object_or_404(Usuario, id=id)
-    # Aquí puedes agregar lógica para cambiar clave (si lo implementas)
-    return render(request, 'core/reconocimiento/cambiar_clave.html', {'usuario': usuario})
-
+    # Lógica para cambiar clave (puedes implementarla luego)
+    return render(request, 'cambiar_clave.html', {'usuario': usuario})
 
 def configuracion_view(request):
     return render(request, 'configuracion.html')

@@ -10,7 +10,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" href="{% static 'Authentication/favicon.ico' %}" type="image/x-icon">
-  
 </head>
 
 <body>
@@ -25,7 +24,7 @@
 
     <div class="navbar-logo">
       {% if user.is_authenticated %}
-        <a href="#" onclick="handleLogoClick(event)">
+        <a href="{% url 'home' %}">
           <img src="{% static 'Authentication/image/logo.png' %}" alt="Logo" class="logo-img">
           <span class="logo-text">MonitorAula</span>
         </a>
@@ -55,13 +54,13 @@
         </div>
       </div>
 
-      <div class="notification-logo" onclick="toggleNotificationMenu()">
-        <img src="{% static 'Authentication/image/campana.png' %}" alt="Notificaciones">
+      <!-- Cambios en el HTML del menú de notificaciones -->
+      <div class="notification-logo relative" onclick="toggleNotificationMenu()">
+        <img id="campana-icon" src="{% static 'Authentication/image/campana.png' %}" alt="Notificaciones">
+        <span id="notification-badge" style="display:none;" class="absolute top-0 right-0 bg-red-600 text-white rounded-full px-2 text-xs">1</span>
       </div>
-      <div class="notification-dropdown" id="notificationDropdown">
-        <a href="#">Notificación 1</a>
-        <a href="#">Notificación 2</a>
-        <a href="#">Notificación 3</a>
+      <div class="notification-dropdown" id="notificationDropdown" style="display:none; min-width:220px; min-height:80px; padding:16px 12px; box-sizing:border-box;">
+        <!-- Notificaciones dinámicas -->
       </div>
 
       <div class="menu-toggle" onclick="toggleMenu()">
@@ -84,11 +83,12 @@
     {% endif %}
   </header>
 
-  <main >
+  <main>
     {% block content %}{% endblock %}
   </main>
 
   <!-- JS personalizado -->
   <script src="{% static 'Authentication/js/navbar.js' %}"></script>
+  <script src="{% static 'Authentication/js/alertas.js' %}"></script>
 </body>
 </html>
